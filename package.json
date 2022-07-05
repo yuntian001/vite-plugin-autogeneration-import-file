@@ -1,0 +1,42 @@
+{
+  "name": "vite-plugin-autogeneration-import-file",
+  "version": "1.0.0",
+  "description": "vite 自动生成 引入文件插件",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.cjs"
+  },
+  "scripts": {
+    "test": "vite --config ./test/vite.config.js",
+    "clean": "rimraf dist",
+    "build": "npm run clean && microbundle -f esm,cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuntian001/vite-plugin-autogeneration-import-file.git"
+  },
+  "author": "yuntian001",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yuntian001/vite-plugin-autogeneration-import-file/issues"
+  },
+  "homepage": "https://github.com/yuntian001/vite-plugin-autogeneration-import-file#readme",
+  "devDependencies": {
+    "@types/micromatch": "^4.0.2",
+    "@types/node": "^18.0.1",
+    "microbundle": "^0.15.0",
+    "rimraf": "^3.0.2"
+  },
+  "dependencies": {
+    "fast-glob": "^3.2.11",
+    "micromatch": "^4.0.5",
+    "vite": "^2.0.2"
+  },
+  "peerDependencies": {
+    "vite": "^2.0.2"
+  }
+}
