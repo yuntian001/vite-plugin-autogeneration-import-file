@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-autogeneration-import-file",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "vite 自动生成 引入文件插件",
   "type": "module",
   "main": "dist/index.cjs",
@@ -10,6 +10,7 @@
     "require": "./dist/index.cjs",
     "default": "./dist/index.cjs"
   },
+  "files": ["dist"],
   "scripts": {
     "test": "vite --config ./test/vite.config.js",
     "clean": "rimraf dist",
