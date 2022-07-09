@@ -6,10 +6,10 @@ vite 自动生成 引入文件插件
 ## 快速开始
 1. 安装
   - vite2:
-   `npm i vite-plugin-autogeneration-import-file@1.0.0 -D`
+   `npm i vite-plugin-autogeneration-import-file@">=1.0.0 < 2.0.0" -D`
 
   - vite3:
-  `npm i vite-plugin-autogeneration-import-file@2.0.0 -D`
+  `npm i vite-plugin-autogeneration-import-file@">=2.0.0 < 3.0.0" -D`
 
 2. vite.config.js中使用
     
