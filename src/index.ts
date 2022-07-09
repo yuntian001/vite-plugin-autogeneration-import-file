@@ -90,12 +90,12 @@ const loadPath = async function (dir: string,
     const entries = await fg(pattern, Object.assign({ cwd: dir, dot: true }, options));
     let str = template ? template : '//当前文件由vite-plugin-autogeneration-import-file自动生成\n//code';
     entries.forEach((fileName: string) => {
-        if (isServer) {
-            loadFiles.push(fileName);
-        }
         getCode(dir, fileName, toFile, name, codeTemplates).forEach((item) => {
             str = str.replace(item.key, item.value + item.key);
         });
+        if (isServer) {
+            loadFiles.push(fileName);
+        }
     });
     str && fs.writeFileSync(toFile, str);
     console.log(`mk ${toFile} success\n`)
@@ -125,8 +125,9 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                 isServer = true;
                 fs.watch(item.dir, { recursive: true },
                     function (eventType: fs.WatchEventType, fileName: string) {
+                        fileName = normalizePath(fileName);
                         if (eventType === 'rename') {
-                            let str:string = <string>readFileSync(item.toFile, 'utf8') || '' ;
+                            let str =  <string>readFileSync(item.toFile, 'utf8') || '' ;
                             let filePath = path.resolve(item.dir, fileName);
                             if (fs.existsSync(filePath)) {//存在
                                 let stat = fs.lstatSync(filePath);
