@@ -40,7 +40,7 @@ export default defineConfig({
 ```
 interface codeTemplate { //代码模板
     key: string, //标识符 
-    template: string,//模板 codeTemplate.template里的{{name}}会被替换为name
+    template: string,//模板 codeTemplate.template里的{{name}}会被替换为name {{path}}会被替换为被导入的相对路径
     value?: string //根据模板自动生成，不可传入
 }
 type dirOptions = { //插件配置
@@ -50,7 +50,7 @@ type dirOptions = { //插件配置
     options?: fg.Options,//fast-glob 匹配参数
     name?: string | ((fileName:string)=>string),//名称 当为字符串时里面的{{name}}会被替换为格式化后的驼峰名称, 默认值为："{{name}}"
     codeTemplates?: codeTemplate[] //代码模板 默认值为："[{key: '//code',template: 'export { default as {{name}} } from "{{path}}"\n'}]"
-    template?: string//文件模板 会递归循环codeTemplates把template里的codeTemplate.key替换为对应的codeTemplate.value 默认值为："//当前文件自动生成，不要自行更改\n//code"
+    template?: string//文件模板 会递归循环codeTemplates把template里的codeTemplate.key替换为对应的codeTemplate.value 默认值为："当前文件由vite-plugin-autogeneration-import-file自动生成\n//code"
 }[]
 ``` 
 

@@ -6,6 +6,7 @@ import { normalizePath } from 'vite';
 let isServer = false;
 let loadFiles: string[] = [];
 let tmpRemoves: string[] = [];
+const toFileContents:Map<string,string> = new Map();
 //path转驼峰变量名并剔除最后的index/Index
 export const getName = function (fileName: string, nameTemplate = '{{name}}'): string {
     const index = fileName.lastIndexOf('.');
@@ -39,8 +40,8 @@ type dirOptions = {
 }[]
 
 
-//获取导入文件地址
-const getFileImportName = function (dir: string, fileName: string): string {
+//获取导入文件绝对地址
+const getFileImportPath = function (dir: string, fileName: string): string {
     fileName = path.resolve(dir, fileName);
     if (fileName.endsWith('.ts')) {
         fileName = fileName.slice(0, -3);
@@ -50,10 +51,15 @@ const getFileImportName = function (dir: string, fileName: string): string {
 
 //获取导入文件代码
 const getCode = function (dir: string,
-    fileName: string = '',
+    fileName: string,
+    toFile: string,
     name: string | ((name: string) => string) = undefined,
     codeTemplates: codeTemplate[] = []): codeTemplate[] {
-    const filePath = getFileImportName(dir, fileName);
+    const filePath = getFileImportPath(dir, fileName);
+    let relativePath = normalizePath(path.relative(path.dirname(path.resolve(toFile)), filePath));
+    if(!relativePath.startsWith('../')){
+        relativePath = './'+relativePath;
+    }
     if (typeof name == 'function') {
         fileName = name(getName(fileName));
 
@@ -69,25 +75,25 @@ const getCode = function (dir: string,
         })
     }
     codeTemplate.forEach((item) => {
-        item.value = item.template.replace(/\{\{name\}\}/g, fileName).replace(new RegExp('\{\{path\}\}', 'g'), filePath);
+        item.value = item.template.replace(/\{\{name\}\}/g, fileName).replace(new RegExp('\{\{path\}\}', 'g'), relativePath);
     })
     return codeTemplate;
 }
 
 const loadPath = async function (dir: string,
-    toFile: string = '',
+    toFile: string,
     pattern: fg.Pattern | fg.Pattern[],
     options: fg.Options,
     name: string | ((name: string) => string) = undefined,
     template: string = '',
     codeTemplates: codeTemplate[] = []) {
     const entries = await fg(pattern, Object.assign({ cwd: dir, dot: true }, options));
-    let str = template ? template : '//当前文件自动生成，不要自行更改\n//code';
+    let str = template ? template : '//当前文件由vite-plugin-autogeneration-import-file自动生成\n//code';
     entries.forEach((fileName: string) => {
         if (isServer) {
             loadFiles.push(fileName);
         }
-        getCode(dir, fileName, name, codeTemplates).forEach((item) => {
+        getCode(dir, fileName, toFile, name, codeTemplates).forEach((item) => {
             str = str.replace(item.key, item.value + item.key);
         });
     });
@@ -95,6 +101,14 @@ const loadPath = async function (dir: string,
     console.log(`mk ${toFile} success\n`)
 }
 
+
+export function readFileSync(...args:Parameters<typeof fs.readFileSync>):ReturnType< typeof fs.readFileSync> | undefined{
+    try{
+        return fs.readFileSync(...args);
+    }catch{
+        return undefined;
+    }
+}
 
 export default function loadPathsPlugin(dirOptions: dirOptions) {
     return {
@@ -112,7 +126,7 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                 fs.watch(item.dir, { recursive: true },
                     function (eventType: fs.WatchEventType, fileName: string) {
                         if (eventType === 'rename') {
-                            let str = fs.readFileSync(item.toFile, 'utf8');
+                            let str:string = <string>readFileSync(item.toFile, 'utf8') || '' ;
                             let filePath = path.resolve(item.dir, fileName);
                             if (fs.existsSync(filePath)) {//存在
                                 let stat = fs.lstatSync(filePath);
@@ -128,13 +142,14 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                     prefix = fileName + '/';
                                 }
                                 changeFiles.forEach(fileName => {
-                                    const code = getCode(item.dir, prefix + fileName, item.name, item.codeTemplates);
+                                    const code = getCode(item.dir, prefix + fileName, item.toFile, item.name, item.codeTemplates);
                                     code.forEach((codeItem) => {
                                         str = str.replace(codeItem.key, codeItem.value + codeItem.key);
                                     });
                                     loadFiles.push(prefix + fileName);
                                 })
                                 if (changeFiles.length) {
+                                    toFileContents.set(item.toFile,str);
                                     fs.writeFileSync(item.toFile, str);
                                     console.log(item.toFile + ' add code');
                                 }
@@ -142,13 +157,14 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                             } else {//不存在文件
                                 let changeFiles = loadFiles.filter(name => name.startsWith(fileName + '/') || name == fileName);
                                 changeFiles.forEach(fileName => {
-                                    const code = getCode(item.dir, fileName, item.name, item.codeTemplates);
+                                    const code = getCode(item.dir, fileName, item.toFile, item.name, item.codeTemplates);
                                     code.forEach((codeItem) => {
                                         str = str.replace(codeItem.value, '');
                                     });
                                     loadFiles.slice(loadFiles.indexOf(fileName), 1);
                                 });
                                 if (changeFiles.length) {
+                                    toFileContents.set(item.toFile,str);
                                     fs.writeFileSync(item.toFile, str);
                                     if (changeFiles[0] !== fileName) {
                                         tmpRemoves = changeFiles.map(name => name.slice(fileName.length + 1));
@@ -157,10 +173,15 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                     }
                                     console.log(item.toFile + ' remove code');
                                 }
-
                             }
                         }
-                    });
+                });
+                fs.watch(item.toFile,{},function(eventType: fs.WatchEventType, fileName: string){
+                    const content = toFileContents.get(item.toFile);
+                    if(content !== undefined && content !== readFileSync(item.toFile, 'utf8')){
+                        fs.writeFileSync(item.toFile,content);
+                    }
+                })
             })
 
         },
