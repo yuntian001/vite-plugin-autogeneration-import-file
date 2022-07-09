@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-autogeneration-import-file",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "vite 自动生成 引入文件插件",
   "type": "module",
   "main": "dist/index.cjs",
@@ -34,8 +34,7 @@
   },
   "dependencies": {
     "fast-glob": "^3.2.11",
-    "micromatch": "^4.0.5",
-    "vite": "^2.0.2"
+    "micromatch": "^4.0.5"
   },
   "peerDependencies": {
     "vite": "^2.0.2"
