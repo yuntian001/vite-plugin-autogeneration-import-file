@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-autogeneration-import-file",
-  "version": "1.0.3",
+  "version": "1.0.2",
   "description": "vite 自动生成 引入文件插件",
   "type": "module",
   "main": "dist/index.cjs",
@@ -17,6 +17,7 @@
     "test": "npm run build && vite --config ./test/vite.config.js",
     "clean": "rimraf dist",
     "build": "npm run clean && microbundle -f esm,cjs",
+    "release": "release-it",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
   "repository": {
@@ -30,9 +31,11 @@
   },
   "homepage": "https://github.com/yuntian001/vite-plugin-autogeneration-import-file#readme",
   "devDependencies": {
+    "@release-it/conventional-changelog": "^5.0.0",
     "@types/micromatch": "^4.0.2",
     "@types/node": "^18.0.1",
     "microbundle": "^0.15.0",
+    "release-it": "^15.1.1",
     "rimraf": "^3.0.2"
   },
   "dependencies": {
