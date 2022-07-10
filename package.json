@@ -18,7 +18,7 @@
     "clean": "rimraf dist",
     "build": "npm run clean && microbundle -f esm,cjs",
     "release": "release-it",
-    "release--dry-run": "release-it --dry-run"
+    "release-test": "release-it --dry-run"
   },
   "repository": {
     "type": "git",
