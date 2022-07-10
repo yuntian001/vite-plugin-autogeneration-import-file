@@ -17,8 +17,7 @@
     "test": "npm run build && vite --config ./test/vite.config.js",
     "clean": "rimraf dist",
     "build": "npm run clean && microbundle -f esm,cjs",
-    "release": "release-it",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+    "release": "release-it"
   },
   "repository": {
     "type": "git",
