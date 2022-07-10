@@ -17,7 +17,7 @@
     "test": "npm run build && vite --config ./test/vite.config.js",
     "clean": "rimraf dist",
     "build": "npm run clean && microbundle -f esm,cjs",
-    "release": "release-it"
+    "release": "release-it --release-version"
   },
   "repository": {
     "type": "git",
