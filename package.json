@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-autogeneration-import-file",
   "version": "2.0.0",
-  "description": "vite 自动生成 引入文件插件",
+  "description": "vite 自动生成 引入文件插件 支持vite2 、vite3",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
