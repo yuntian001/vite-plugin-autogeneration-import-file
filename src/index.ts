@@ -61,8 +61,7 @@ const getCode = function (dir: string,
         relativePath = './'+relativePath;
     }
     if (typeof name == 'function') {
-        fileName = name(getName(fileName));
-
+        fileName = name(fileName);
     } else {
         fileName = getName(fileName, name);
     }
