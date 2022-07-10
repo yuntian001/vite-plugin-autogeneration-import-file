@@ -7,7 +7,19 @@
     },
     "plugins": {
         "@release-it/conventional-changelog": {
-            "preset": "conventionalcommits",
+            "preset": {
+                "name":"conventionalcommits",
+                "types": [
+                    {"type": "feat", "section": "功能"},
+                    {"type": "fix", "section": "Bug 修复"},
+                    {"type": "chore", "section": "其他"},
+                    {"type": "docs", "section": "文档更改"},
+                    {"type": "style", "section": "样式"},
+                    {"type": "refactor", "section": "重构"},
+                    {"type": "perf", "section": "性能改进"},
+                    {"type": "test", "section": "测试添加/更正"}
+                ]
+            },
             "infile": "CHANGELOG.md"
         }
     }
