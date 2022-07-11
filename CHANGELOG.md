@@ -1,5 +1,12 @@
 
 
+### [2.0.8](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.0.7...2.0.8) (2022-07-11)
+
+
+### Bug 修复[fix]
+
+* 修复ts 不提示的错误 ([b727792](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/commit/b727792c16485a8a2ebf7c4142fc7e48577c0a9b))
+
 ### [2.0.7](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.0.6...2.0.7) (2022-07-11)
 
 
