@@ -6,7 +6,7 @@ import { normalizePath } from 'vite';
 let isServer = false;
 let loadFiles: string[] = [];
 let tmpRemoves: string[] = [];
-const toFileContents:Map<string,string> = new Map();
+const toFileContents: Map<string, string> = new Map();
 //path转驼峰变量名并剔除最后的index/Index
 export const getName = function (fileName: string, nameTemplate = '{{name}}'): string {
     const index = fileName.lastIndexOf('.');
@@ -57,8 +57,8 @@ const getCode = function (dir: string,
     codeTemplates: codeTemplate[] = []): codeTemplate[] {
     const filePath = getFileImportPath(dir, fileName);
     let relativePath = normalizePath(path.relative(path.dirname(path.resolve(toFile)), filePath));
-    if(!relativePath.startsWith('../')){
-        relativePath = './'+relativePath;
+    if (!relativePath.startsWith('../')) {
+        relativePath = './' + relativePath;
     }
     if (typeof name == 'function') {
         fileName = name(fileName);
@@ -101,10 +101,10 @@ const loadPath = async function (dir: string,
 }
 
 
-export function readFileSync(...args:Parameters<typeof fs.readFileSync>):ReturnType< typeof fs.readFileSync> | undefined{
-    try{
+export function readFileSync(...args: Parameters<typeof fs.readFileSync>): ReturnType<typeof fs.readFileSync> | undefined {
+    try {
         return fs.readFileSync(...args);
-    }catch{
+    } catch {
         return undefined;
     }
 }
@@ -112,13 +112,6 @@ export function readFileSync(...args:Parameters<typeof fs.readFileSync>):ReturnT
 export default function loadPathsPlugin(dirOptions: dirOptions) {
     return {
         name: 'load-path-ts',
-        async buildStart() {
-            let proArr: Promise<unknown>[] = [];
-            dirOptions.forEach(item => {
-                proArr.push(loadPath(item.dir, item.toFile, item.pattern, item.options || {}, item.name, item.template, item.codeTemplates));
-            })
-            await Promise.allSettled(proArr);
-        },
         configureServer() {//服务器启动时被调用
             dirOptions.forEach(item => {
                 isServer = true;
@@ -126,7 +119,7 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                     function (eventType: fs.WatchEventType, fileName: string) {
                         fileName = normalizePath(fileName);
                         if (eventType === 'rename') {
-                            let str =  <string>readFileSync(item.toFile, 'utf8') || '' ;
+                            let str = <string>readFileSync(item.toFile, 'utf8') || '';
                             let filePath = path.resolve(item.dir, fileName);
                             if (fs.existsSync(filePath)) {//存在
                                 let stat = fs.lstatSync(filePath);
@@ -149,7 +142,7 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                     loadFiles.push(prefix + fileName);
                                 })
                                 if (changeFiles.length) {
-                                    toFileContents.set(item.toFile,str);
+                                    toFileContents.set(item.toFile, str);
                                     fs.writeFileSync(item.toFile, str);
                                     console.log(item.toFile + ' add code');
                                 }
@@ -164,7 +157,7 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                     loadFiles.slice(loadFiles.indexOf(fileName), 1);
                                 });
                                 if (changeFiles.length) {
-                                    toFileContents.set(item.toFile,str);
+                                    toFileContents.set(item.toFile, str);
                                     fs.writeFileSync(item.toFile, str);
                                     if (changeFiles[0] !== fileName) {
                                         tmpRemoves = changeFiles.map(name => name.slice(fileName.length + 1));
@@ -175,15 +168,25 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                 }
                             }
                         }
-                });
-                fs.watch(item.toFile,{},function(eventType: fs.WatchEventType, fileName: string){
-                    const content = toFileContents.get(item.toFile);
-                    if(content !== undefined && content !== readFileSync(item.toFile, 'utf8')){
-                        fs.writeFileSync(item.toFile,content);
-                    }
-                })
+                    });
             })
-
         },
+        async buildStart() {
+            let proArr: Promise<unknown>[] = [];
+            dirOptions.forEach(item => {
+                proArr.push(loadPath(item.dir, item.toFile, item.pattern, item.options || {}, item.name, item.template, item.codeTemplates));
+            })
+            await Promise.allSettled(proArr);
+            if (isServer) {
+                dirOptions.forEach(item => {
+                    fs.watch(item.toFile, {}, function (eventType: fs.WatchEventType, fileName: string) {
+                        const content = toFileContents.get(item.toFile);
+                        if (content !== undefined && content !== readFileSync(item.toFile, 'utf8')) {
+                            fs.writeFileSync(item.toFile, content);
+                        }
+                    });
+                });
+            }
+        }
     }
 }
