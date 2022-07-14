@@ -1,20 +1,23 @@
 # vite-plugin-autogeneration-import-file
-vite 自动生成 引入文件插件
+Vite automatically generates import file plug-ins.
 
-支持vite2 和 vite^3.0.0-beta
+Support vite2 and vite^3.0.0-beta.
 
-## 快速开始
-1. 安装
+## 中文文档: [README-zh-cn.md](./README-zh-cn.md).
+
+## Fast Start
+1. Install
   - vite2:
    `npm i vite-plugin-autogeneration-import-file@">=1.0.0 < 2.0.0" -D`
 
   - vite3:
   `npm i vite-plugin-autogeneration-import-file@">=2.0.0 < 3.0.0" -D`
 
-2. vite.config.js中使用
+2. Example 
     
 ```
-import {default as autogenerationImportFile,getName} from '../dist/index.js';
+//vite.config.js
+import {default as autogenerationImportFile,getName} from 'vite-plugin-autogeneration-import-file';
 import { defineConfig } from 'vite'
 export default defineConfig({
     root:'./index.html',
@@ -42,21 +45,21 @@ export default defineConfig({
 });
 ```
    
-## 插件配置说明(dirOptions)
+## Configuration Description(dirOptions)
 ```
-interface codeTemplate { //代码模板
-    key: string, //标识符 
-    template: string,//模板 codeTemplate.template里的{{name}}会被替换为name {{path}}会被替换为被导入的相对路径
-    value?: string //根据模板自动生成，不可传入
+interface codeTemplate { //Code Templates
+    key: string, //tag 
+    template: string,//template. {{name}} in codetemplate, template will be replaced by name. {{path}} which will be replaced by the relative path to be imported.
+    value?: string //It is automatically generated based on the template and cannot be imported
 }
-type dirOptions = { //插件配置
-    dir: string,//遍历路径
-    toFile: string,//写入目标文件地址
-    pattern: fg.Pattern | fg.Pattern[],//匹配规则 参考 fast-glob
-    options?: fg.Options,//fast-glob 匹配参数
-    name?: string | ((fileName:string)=>string),//名称 当为字符串时里面的{{name}}会被替换为格式化后的驼峰名称, 默认值为："{{name}}"
-    codeTemplates?: codeTemplate[] //代码模板 默认值为："[{key: '//code',template: 'export { default as {{name}} } from "{{path}}"\n'}]"
-    template?: string//文件模板 会递归循环codeTemplates把template里的codeTemplate.key替换为对应的codeTemplate.value 默认值为："当前文件由vite-plugin-autogeneration-import-file自动生成\n//code"
+type dirOptions = { //Plugin config
+    dir: string,//The path to traverse
+    toFile: string,//write the destination file address
+    pattern: fg.Pattern | fg.Pattern[],//For the matching rule, see `fast-glob`.
+    options?: fg.Options,//`fast-glob` matching parameter.
+    name?: string | ((fileName:string)=>string),//Name. `{{name}}` is replaced with a formatted hump name when it is a string. Default: "{{name}}"
+    codeTemplates?: codeTemplate[] //The code template. defaults:"[{key: '//code',template: 'export { default as {{name}} } from "{{path}}"\n'}]"
+    template?: string//File Template. `codeTemplate.key` is replaced by codeTemplate.value recursively by `codeTemplate.value`. default:"当前文件由vite-plugin-autogeneration-import-file自动生成\n//code"
 }[]
 ``` 
 
