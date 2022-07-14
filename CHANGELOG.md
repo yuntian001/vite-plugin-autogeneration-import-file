@@ -1,5 +1,13 @@
 
 
+### [2.0.9](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.0.8...2.0.9) (2022-07-14)
+
+
+### 文档更改[docs]
+
+* 加上英文文档、引入demo错误修复 ([ed57d51](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/commit/ed57d51957e0a6047b5d4f462eb421bec85c25e7))
+* 加上英文文档、引入demo错误修复 ([39df7d8](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/commit/39df7d801d569ad821f946f56b02a66e135afc57))
+
 ### [2.0.8](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.0.7...2.0.8) (2022-07-11)
 
 
