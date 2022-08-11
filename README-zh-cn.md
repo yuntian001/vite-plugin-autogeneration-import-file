@@ -5,15 +5,13 @@ vite 自动生成 引入文件插件
 
 ## 快速开始
 1. 安装
-  - vite2:
-   `npm i vite-plugin-autogeneration-import-file@">=1.0.0 < 2.0.0" -D`
-
-  - vite3:
-  `npm i vite-plugin-autogeneration-import-file@">=2.0.0 < 3.0.0" -D`
-
+   
+    `npm i vite-plugin-autogeneration-import-file -D`
 2. vite.config.js中使用
-    
+   
+- package.json type module
 ```
+//vite.config.js
 import {default as autogenerationImportFile,getName} from 'vite-plugin-autogeneration-import-file';
 import { defineConfig } from 'vite'
 export default defineConfig({
@@ -25,6 +23,37 @@ export default defineConfig({
             toFile:'test/store/module.ts',
             name:(name)=>{
               name = getName(name);
+              return name[0].toUpperCase()+name.slice(1)+'Store';
+            }
+          },
+          {
+            pattern:['**/{Index.vue,index.ts,index.js}','*.{vue,ts,js}'],
+            dir:'test/components',
+            toFile:'test/types/components.d.ts',
+            template:'//import code\ndeclare module "@vue/runtime-core" {\n    interface GlobalComponents {\n        //key code\n    }\n}\nexport {};',
+            codeTemplates:[
+              {key:'//import code\n',template:'import {{name}} from "{{path}}"\n'},
+              {key:'        //key code\n',template:'        {{name}}:typeof {{name}}\n'},
+            ]
+          }
+    ])]
+});
+```
+- package.json type commonjs
+
+```
+//vite.config.js
+import autoImport from 'vite-plugin-autogeneration-import-file';
+import { defineConfig } from 'vite'
+export default defineConfig({
+    root:'./index.html',
+    plugins: [autoImport.default([
+        {
+            pattern:['**/*.{ts,js}','*.{ts,js}'],
+            dir:'test/store/modules',
+            toFile:'test/store/module.ts',
+            name:(name)=>{
+              name = autoImport.getName(name);
               return name[0].toUpperCase()+name.slice(1)+'Store';
             }
           },

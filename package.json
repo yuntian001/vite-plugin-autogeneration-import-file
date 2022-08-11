@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "npm run build && vite --config ./test/vite.config.js",
+    "test": "npm run build && cd ./test && npm run dev",
     "clean": "rimraf dist",
     "build": "npm run clean && microbundle -f esm,cjs",
     "release": "release-it",
@@ -47,6 +47,6 @@
     "micromatch": "^4.0.5"
   },
   "peerDependencies": {
-    "vite": "^3.0.0-beta"
+    "vite": ">2.0.2"
   }
 }
