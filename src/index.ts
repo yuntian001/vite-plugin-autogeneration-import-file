@@ -4,13 +4,13 @@ import * as fs from 'fs';
 import * as path from "path";
 import { normalizePath } from 'vite';
 let isServer = false;
-let loadFiles: {fileName:string,name:string,dir:string}[][] = [];
+let loadFiles: { fileName: string, name: string, dir: string }[][] = [];
 let tmpRemovePaths: string[] = [];
 const toFileContents: Map<string, string> = new Map();
 //path转驼峰变量名并剔除最后的index/Index
-export const getName = function (fileName: string, nameTemplate:string | ((name: string) => string) = '{{name}}'): string {
+const getName = function (fileName: string, nameTemplate: string | ((name: string) => string) = '{{name}}'): string {
     if (typeof nameTemplate == 'function') {
-        return  nameTemplate(fileName);
+        return nameTemplate(fileName);
     }
     const index = fileName.lastIndexOf('.');
     if (index > 0) {
@@ -78,7 +78,7 @@ const getCode = function (dir: string,
 }
 
 const loadPath = async function (
-    optionIndex:number,
+    optionIndex: number,
     dir: string,
     toFile: string,
     pattern: fg.Pattern | fg.Pattern[],
@@ -92,49 +92,57 @@ const loadPath = async function (
         getCode(dir, fileName, toFile, name, codeTemplates).forEach((item) => {
             str = str.replace(item.key, item.value + item.key);
         });
-        loadFiles[optionIndex].push({fileName,name:getName(fileName,name),dir});
+        loadFiles[optionIndex].push({ fileName, name: getName(fileName, name), dir });
     });
     str && fs.writeFileSync(toFile, str);
     console.log(`mk ${toFile} success\n`)
 }
 
 
-export function readFileSync(...args: Parameters<typeof fs.readFileSync>): ReturnType<typeof fs.readFileSync> | undefined {
+function readFileSync(...args: Parameters<typeof fs.readFileSync>): ReturnType<typeof fs.readFileSync> | undefined {
     try {
         return fs.readFileSync(...args);
     } catch {
         return undefined;
     }
 }
-
-export function resolvers(options={include:[0]}){
-    return [
-        {
-          type: 'component',
-          resolve: async (componentName: string) => {
-            for(const index of options.include)
-            {
-                let componentInfo = loadFiles[index].find(({name})=>name == componentName);
-                if(componentInfo){
-                    return path.resolve(componentInfo.dir, componentInfo.fileName)
+//可由unplugin-vue-components使用
+function resolver(componentInclude: number[], directiveInclude: number[] = []): any[] {
+    let result = [];
+    if (componentInclude.length) {
+        result.push({
+            type: 'component',
+            resolve: async (componentName: string) => {
+                for (const index of componentInclude) {
+                    let componentInfo = loadFiles[index].find(({ name }) => name == componentName);
+                    if (componentInfo) {
+                        return normalizePath(path.resolve(componentInfo.dir, componentInfo.fileName));
+                    }
                 }
-            }
-          },
-        },
-        // {
-        //   type: 'directive',
-        //   resolve: async (name: string) => {
-        //     return resolveDirective(name, await resolveOptions())
-        //   },
-        // },
-    ]
+            },
+        })
+    }
+    if (directiveInclude.length) {
+        result.push({
+            type: 'directive',
+            resolve: async (directiveName: string) => {
+                for (const index of directiveInclude) {
+                    let directiveInfo = loadFiles[index].find(({ name }) => name == directiveName || name == ('V' + directiveName));
+                    if (directiveInfo) {
+                        return normalizePath(path.resolve(directiveInfo.dir, directiveInfo.fileName));
+                    }
+                }
+            },
+        })
+    }
+    return result
 }
 
-export default function loadPathsPlugin(dirOptions: dirOptions) {
+function loadPathsPlugin(dirOptions: dirOptions) {
     return {
         name: 'load-path-ts',
         configureServer() {//服务器启动时被调用
-            dirOptions.forEach((item,index) => {
+            dirOptions.forEach((item, index) => {
                 isServer = true;
                 fs.watch(item.dir, { recursive: true },
                     function (eventType: fs.WatchEventType, fileName: string) {
@@ -160,7 +168,7 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                     code.forEach((codeItem) => {
                                         str = str.replace(codeItem.key, codeItem.value + codeItem.key);
                                     });
-                                    loadFiles[index].push({fileName:prefix + fileName,name:getName(prefix + fileName,item.name),dir:item.dir});
+                                    loadFiles[index].push({ fileName: prefix + fileName, name: getName(prefix + fileName, item.name), dir: item.dir });
                                 })
                                 if (changeFiles.length) {
                                     toFileContents.set(item.toFile, str);
@@ -169,9 +177,9 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                 }
                                 tmpRemovePaths = [];
                             } else {//不存在文件
-                                let changeFiles:string[] = []
-                                loadFiles[index].slice(0).forEach((val,k)=>{
-                                    if(val.fileName.startsWith(fileName + '/') || val.fileName == fileName){
+                                let changeFiles: string[] = []
+                                loadFiles[index].slice(0).forEach((val, k) => {
+                                    if (val.fileName.startsWith(fileName + '/') || val.fileName == fileName) {
                                         const code = getCode(item.dir, val.fileName, item.toFile, item.name, item.codeTemplates);
                                         code.forEach((codeItem) => {
                                             str = str.replace(codeItem.value, '');
@@ -192,20 +200,17 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
                                 }
                             }
                         }
-                        console.log('loadFiles',loadFiles)
                     });
             })
         },
         async buildStart() {
             let proArr: Promise<unknown>[] = [];
-            dirOptions.forEach((item,index) => {
+            dirOptions.forEach((item, index) => {
                 loadFiles[index] = [];
-                proArr.push(loadPath(index,item.dir, item.toFile, item.pattern, item.options || {}, item.name, item.template, item.codeTemplates));
+                proArr.push(loadPath(index, item.dir, item.toFile, item.pattern, item.options || {}, item.name, item.template, item.codeTemplates));
             })
             await Promise.allSettled(proArr);
-            console.log('loadFiles',JSON.stringify(loadFiles))
             if (isServer) {
-                console.log(11111);
                 dirOptions.forEach(item => {
                     toFileContents.set(item.toFile, readFileSync(item.toFile, 'utf8') as string);
                     fs.watch(item.toFile, {}, function (eventType: fs.WatchEventType, fileName: string) {
@@ -219,3 +224,4 @@ export default function loadPathsPlugin(dirOptions: dirOptions) {
         }
     }
 }
+export { loadPathsPlugin as default, readFileSync, getName, resolver, loadPathsPlugin as autoImport };

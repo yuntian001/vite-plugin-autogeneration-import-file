@@ -17,7 +17,7 @@
   "scripts": {
     "test": "npm run build && cd ./test && npm run dev",
     "clean": "rimraf dist",
-    "build": "npm run clean && microbundle -f esm,cjs",
+    "build": "npm run clean && microbundle --target node  -f esm,cjs",
     "release": "release-it",
     "release-test": "release-it --dry-run"
   },

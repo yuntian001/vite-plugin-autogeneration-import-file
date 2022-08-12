@@ -1,0 +1,21 @@
+{
+  "name": "vite2",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.2.25"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.3",
+    "typescript": "^4.5.4",
+    "unplugin-vue-components": "^0.22.4",
+    "vite": "^2.9.9",
+    "vite-plugin-autogeneration-import-file": "file:../..",
+    "vue-tsc": "^0.34.7"
+  }
+}
