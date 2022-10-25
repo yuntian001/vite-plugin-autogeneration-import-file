@@ -1,5 +1,19 @@
 
 
+## [3.0.0](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.1.0...3.0.0) (2022-10-25)
+
+### 新功能[feat]
+
+* 修改改为函数生成，支持多vite同时引入 ([21079df](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/commit/21079df818e7f63c9ad44fdd3596b5f224c3b596))
+
+## [2.1.2](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.1.0...3.0.0) (2022-10-25)
+
+
+### Bug 修复[fix]
+
+* 修复多次监听同一文件夹重命名问题 ([5ee331e](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/commit/5ee331ef7ffa1271bcd7a74b8ba65d020fbf1ce7))
+* 修复文件重命名多次重复插入问题 ([570af17](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/commit/570af17a9a98b4b1362b2133825d106234c66902))
+
 ## [2.1.0](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.0.6...2.1.0) (2022-08-12)
 
 
