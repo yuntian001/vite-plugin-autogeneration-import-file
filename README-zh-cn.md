@@ -11,8 +11,9 @@ vite 自动生成 引入文件插件
    
 ```
 //vite.config.js
-import {autoImport,getName} from 'vite-plugin-autogeneration-import-file';
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
+import { getName, createPlugin } from 'vite-plugin-autogeneration-import-file';
+const { autoImport } = createPlugin();
 export default defineConfig({
     root:'./index.html',
     plugins: [autoImport([
@@ -62,8 +63,8 @@ type dirOptions = { //插件配置
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite'
-import {autoImport,getName,resolver} from 'vite-plugin-autogeneration-import-file';
-
+import { getName, createPlugin } from 'vite-plugin-autogeneration-import-file';
+const { autoImport, resolver } = createPlugin();
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(),

@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite'
-import {autoImport,getName,resolver} from 'vite-plugin-autogeneration-import-file';
-
+import {getName,createPlugin} from 'vite-plugin-autogeneration-import-file';
+const {autoImport,resolver} = createPlugin();
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(),
