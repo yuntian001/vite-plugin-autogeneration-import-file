@@ -184,7 +184,7 @@ function loadPathsPlugin(dirOptions: dirOptions) {
                                         code.forEach((codeItem) => {
                                             str = str.replace(codeItem.value, '');
                                         });
-                                        loadFiles[index].slice(k, 1);
+                                        loadFiles[index].splice(k, 1);
                                         changeFiles.push(val.fileName)
                                     }
                                 })
