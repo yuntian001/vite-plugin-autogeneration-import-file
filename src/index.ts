@@ -177,14 +177,16 @@ function loadPathsPlugin(dirOptions: dirOptions) {
                                 }
                                 tmpRemovePaths = [];
                             } else {//不存在文件
-                                let changeFiles: string[] = []
+                                let changeFiles: string[] = [];
+                                let delNumber = 0;
                                 loadFiles[index].slice(0).forEach((val, k) => {
                                     if (val.fileName.startsWith(fileName + '/') || val.fileName == fileName) {
                                         const code = getCode(item.dir, val.fileName, item.toFile, item.name, item.codeTemplates);
                                         code.forEach((codeItem) => {
                                             str = str.replace(codeItem.value, '');
                                         });
-                                        loadFiles[index].splice(k, 1);
+                                        loadFiles[index].splice(k-delNumber, 1);
+                                        delNumber++;
                                         changeFiles.push(val.fileName)
                                     }
                                 })
