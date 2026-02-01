@@ -64,7 +64,7 @@ export const getCode = function (dir: string,
     if (!codeTemplate.length) {
         codeTemplate.push({
             key: '//code',
-            template: 'export { default as {{name}} } from "{{path}}"\n',
+            template: "export { default as {{name}} } from '{{path}}'\n",
         })
     }
     codeTemplate.forEach((item) => {
