@@ -1,5 +1,12 @@
 
 
+## [3.0.1](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/3.0.0...3.0.1) (2026-02-03)
+
+
+### 新功能[feat]
+
+* 默认引入文件双引号改为单引号 ([d08f076](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/commit/d08f076a99ce8f177f21522e54540417b442afb5))
+
 ## [3.0.0](https://github.com/yuntian001/vite-plugin-autogeneration-import-file/compare/2.1.0...3.0.0) (2022-10-25)
 
 ### 新功能[feat]
